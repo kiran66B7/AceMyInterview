@@ -1,0 +1,367 @@
+# AI Interview Preparation Application
+
+## Overview
+An AI-powered interview preparation platform that helps users practice interviews through AI chatbot interactions and live mock interviews with real-time feedback, voice analysis, and comprehensive candidate evaluation.
+
+## Core Features
+
+### Landing and Onboarding
+- Modern landing page with clear value proposition featuring the enlarged PathWiz logo for greater visual prominence
+- User-friendly onboarding flow to set up interview preferences
+- **Mandatory resume upload functionality** supporting PDF and DOCX formats with integrated LLM-powered resume scanning
+- Resume analysis features:
+  - Automatic text extraction and content parsing using LLM
+  - Content quality evaluation with rating system
+  - Personalized improvement recommendations and suggestions
+- Interview configuration options:
+  - Manual target role input field allowing users to type their desired position
+  - Automatic interview type selection based on entered role (Technical, HR, Behavioral)
+  - Automatic difficulty level adjustment based on role complexity (Beginner, Medium, Hard)
+  - Dynamic role-specific interview rounds configuration
+  - Adaptive question sets that adjust based on the manually entered target role
+
+### SEO Optimization
+- Comprehensive HTML head metadata optimization for search engines and social sharing
+- Page title: "PathWiz – Ace Your Interviews with AI | Prompt Techies CSG06"
+- Meta description: "Prepare for technical and HR interviews with PathWiz – an AI-powered mock interview and resume analysis platform by Prompt Techies. Featuring personalized feedback, tone and body language evaluation, and real-time role matching."
+- Meta keywords: "PathWiz, AI Interview Preparation, Mock Interview, Resume Scanner, Prompt Techies, CSG06, Interview Practice, AI Career Coach"
+- Open Graph meta tags for social media sharing previews including title, description, image, and URL
+- Twitter Card meta tags for enhanced Twitter sharing experience
+- Canonical URL meta tag pointing to the application's canister URL or custom domain
+- Favicon integration using PathWiz logo for browser tab identification
+- Meta logo image reference using pathwiz-logo-transparent.png for social sharing
+- Content language specification set to English
+- Proper viewport and charset meta tags for responsive design and character encoding
+
+### Resume Upload Validation
+- **Mandatory resume upload requirement** before accessing any interview functionality
+- Resume upload validation in InterviewSetup component preventing progression without uploaded resume
+- Clear popup modal or warning message displayed when users attempt to proceed without resume: "Resume upload required. Please upload your resume before continuing."
+- Visual UI feedback for missing resume:
+  - Highlighted upload button when resume is missing
+  - Red border indication around upload area
+  - Disabled interview start buttons until resume is uploaded
+- Persistent validation that prevents bypassing through page refresh or direct route access
+- Backend validation enforcement for all interview-related API calls
+
+### Resume-to-Role Verification System
+- **Enhanced verification trigger conditions** requiring both resume upload completion AND target role input completion
+- **Strict prerequisite validation**:
+  - No verification messages or dialogs displayed before resume is uploaded
+  - No verification triggered during active typing or with incomplete role input
+  - Verification only initiates when both resume file exists AND user completes role entry (blur or debounce)
+  - Prevention of placeholder messages like "general professor" before valid input states
+- **Debounced resume-role matching validation** triggered only after user completes target role input
+- **Enhanced timing controls for verification**:
+  - 1-2 second delay after typing inactivity before triggering verification
+  - Verification triggered on input blur or Enter key press
+  - No premature validation during active typing process
+  - Smooth user experience without interrupting role entry
+- LLM-powered keyword scanning and role detection from resume content using existing backend verification endpoints
+- Role compatibility analysis comparing detected skills/experience with selected target role
+- **Enhanced real-time verification flow**:
+  - Automatic verification check using `verifyResumeRole`, `hasRoleVerifiedResume`, and `hasRoleMismatchResume` backend functions
+  - Verification triggered only after both target role input completion and resume upload are completed
+  - Debounced validation preventing interruption during role typing process
+- **Improved user feedback with confirmation and warning popups**:
+  - **Matching role confirmation**: Friendly green popup stating "You're applicable for this job!" with role-specific improvement suggestions
+  - **Automatic improvement suggestions display**: Within the same confirmation modal, show 7-8 detailed role-specific improvement suggestions pulled from `getImprovementSuggestions`
+  - **Non-matching role warning**: Clear red warning popup stating "You're not applicable – please change your role or upload a matching resume."
+  - **Progress prevention**: Start Chatbot and Start Live Mock buttons remain disabled until role-resume compatibility is confirmed
+- **Enhanced UI animations and transitions**:
+  - Subtle transition animations for popup modals consistent with existing UI/UX style
+  - Smooth fade-in/fade-out effects for confirmation and warning messages
+  - Professional timing for debounced verification process
+  - Loading indicators during verification with smooth transitions
+  - Visual feedback for button state changes
+- **Consistent verification across all stages**:
+  - Resume upload component validation
+  - Chatbot interview initialization checks
+  - Live mock interview setup verification
+- Modern design integration following existing application themes with English language content
+
+### AI Chatbot Interview Mode
+- **Lazy-loaded interactive chat interface** for conducting mock interviews **requiring uploaded resume and role verification**
+- **Deferred LLM module initialization** until chatbot session is actually started
+- AI generates contextual questions based on:
+  - Uploaded resume content and LLM analysis
+  - Manually entered target role
+  - Automatically selected interview type
+  - Automatically adjusted difficulty level
+  - Role-specific interview stages
+- Enhanced user interaction features:
+  - Enter key submits messages without requiring button clicks
+  - Automatic feedback triggering when user types "enough" (case-insensitive)
+  - Automatic feedback after defined period of inactivity
+  - Smooth UI animations and visual feedback transitions
+- AI provides qualitative evaluation of responses including:
+  - Clarity assessment
+  - Confidence evaluation
+  - Relevance scoring
+  - Star or numeric rating system
+- Automatic saving of each user response and AI feedback to backend session
+- Session tracking and progress monitoring
+- **Fixed "Start Chatbot" button functionality**:
+  - Proper onClick handler connection to trigger lazy-loaded ChatbotInterview component
+  - Loading spinner display while initializing interview session
+  - Button disabled state during backend verification (resume/role validation)
+  - Smooth transition to chatbot interface once prerequisites are met
+  - Error handling with user-friendly toast alerts for failed session initialization
+  - Responsive button state management with visual feedback
+- **Resume-role verification check before session initialization**
+
+### Live Mock Interview Mode
+- **Lazy-loaded live mock interview component** with **resume upload requirement and role verification validation** before accessing live mock interviews
+- **Deferred camera and microphone module initialization** until live mock session is actually started
+- Pre-session configuration:
+  - Number of questions selection step before starting the interview
+  - Question count options stored in component state
+  - Dynamic interview sequence limitation based on selected question count
+  - Progress visualization showing current question number out of total selected
+- Camera integration for video-based mock interviews with robust permission handling:
+  - **Deferred camera permission requests** using `navigator.mediaDevices.getUserMedia({ video: true })` only when session starts
+  - Proper error handling with try/catch blocks for denied permissions
+  - User-friendly error messages when camera access is blocked or unavailable
+  - Retry button functionality for re-requesting camera permissions
+  - Visual loading indicators (spinner/status text) during permission requests
+  - Fallback handling for unsupported browsers or denied permissions
+  - Proper video stream attachment to video elements once permissions are granted
+- Advanced voice analysis capabilities:
+  - **Deferred speech recognition module loading** until session starts
+  - Real-time speech recognition and transcription
+  - Voice tone detection and analysis (confidence, clarity, enthusiasm)
+  - Voice-based ratings and improvement suggestions using integrated LLM logic
+  - Vocal pattern analysis for communication effectiveness
+- Enhanced speech recognition and answer evaluation:
+  - Real-time transcription of user's spoken responses during video recording
+  - Comparison of transcribed answers with expected correct responses or keywords
+  - Automatic detection of incorrect or incomplete answers
+  - Context-relevant correction suggestions generated by integrated LLM
+  - Dynamic feedback display showing correctness rating and suggested phrasing improvements
+  - Recommendations for future response improvements
+- Dressing sense evaluation:
+  - Image capture during live mock session
+  - Style and professionalism assessment
+  - Appearance-based scoring with constructive feedback
+  - Professional attire recommendations
+- Real-time analysis of:
+  - Body language
+  - Eye contact patterns
+  - Facial expressions
+  - Voice tone and speech patterns
+  - Professional appearance
+  - Spoken answer accuracy and completeness
+- **Enhanced rating display system**:
+  - **No placeholder ratings displayed before interview session starts**
+  - Rating sections remain empty or show "Not yet evaluated" status until session begins
+  - **Dynamic rating updates only after active interview session initiation**
+  - Real-time computation and display of actual feedback scores during session
+  - **Smooth transition animations when real ratings replace empty states**
+  - Visual indicators showing when ratings are being computed vs. when they are finalized
+- Provides feedback on:
+  - Confidence levels
+  - Attentiveness
+  - Communication clarity
+  - Voice quality and tone
+  - Professional presentation
+  - Answer correctness and improvement suggestions
+- Post-session comprehensive summary display:
+  - Correct answers for all questions asked during the session
+  - Overall performance rating based on all evaluation criteria
+  - Personalized improvement tips and recommendations
+  - Session completion confirmation with detailed feedback
+- **Fixed "Start Live Mock" button functionality**:
+  - Proper onClick handler connection to trigger lazy-loaded LiveMockInterview component
+  - Loading spinner display while initializing live mock session
+  - Button disabled state during backend verification (resume/role validation)
+  - Smooth transition to live mock interface once prerequisites are met
+  - Error handling with user-friendly toast alerts for camera access issues and failed initialization
+  - Responsive button state management with visual feedback
+  - Proper error animations for camera permission denials
+- **Resume-role verification check before session initialization**
+
+### Dashboard
+- Overview of past practice sessions with PathWiz branding and enlarged logo
+- Interview feedback history with comprehensive scoring
+- Performance analytics and improvement suggestions
+- Session results summaries with voice and appearance ratings
+- Game-like quiz mode featuring:
+  - Timed, interactive multiple-choice questions
+  - Role-specific question sets tailored to selected job position
+  - Scoring system with immediate feedback
+  - Progress tracking and achievement badges
+- Resource Recommendation Panel:
+  - Curated list of reliable and free external preparation resources
+  - Role-specific learning materials and guides
+  - Interview tips and best practices
+  - Industry-relevant content recommendations
+- **Lazy-loaded Candidate Review Panel**:
+  - Comprehensive evaluation combining all assessment components
+  - Chatbot interview performance scores
+  - Live mock interview ratings (voice, appearance, body language)
+  - Spoken answer accuracy and improvement tracking
+  - Resume quality assessment
+  - Strength and weakness analysis
+  - Final readiness rating and recommendations
+- **Fixed Chatbot and Start Live Mock buttons with proper state management**:
+  - Conditional rendering to mount lazy-loaded ChatbotInterview and LiveMockInterview components without page reload
+  - Visual feedback for button interactions and component transitions
+  - Loading states with spinners during component initialization
+  - Error boundaries for handling component mounting failures
+- **Resume upload status indicator and role verification status display**
+
+### Interview Setup Enhancement
+- Manual target role input with adaptive configuration:
+  - Text input field for users to type their desired job position
+  - Automatic adjustment of interview parameters based on entered role
+  - Dynamic question sets that adapt to the specified target role
+  - Multi-stage interview process simulation based on role requirements
+  - Customized evaluation criteria per manually entered role
+  - Progressive difficulty levels within each round based on role complexity
+- **Mandatory resume upload validation preventing interview access**
+- **Enhanced prerequisite-based resume-role verification system**:
+  - **Strict validation requiring both resume upload AND completed role input before any verification**
+  - **Hidden verification dialogs and messages until both prerequisites are satisfied**
+  - **Prevention of placeholder or premature verification messages before valid input states**
+  - **Debounced verification with 1-2 second delay** after typing inactivity
+  - **Verification triggered on input blur or Enter key press** for immediate feedback when user finishes typing
+  - **No interruption during active typing** to maintain smooth user experience
+  - Integration with existing backend verification endpoints (`verifyResumeRole`, `hasRoleVerifiedResume`, `hasRoleMismatchResume`)
+  - Improved user feedback with confirmation and warning popups appearing only after both prerequisites are met
+  - Automatic display of role-specific improvement suggestions from `getImprovementSuggestions`
+  - Button state management based on verification results
+- **Enhanced visual feedback and modal system**:
+  - Confirmation popup for matching roles with improvement suggestions
+  - Warning popup for non-matching roles with clear guidance
+  - Subtle transition animations consistent with existing UI/UX
+  - Professional timing for debounced verification process
+  - Loading indicators during verification process with smooth transitions
+- **Enhanced button functionality with proper state management**:
+  - "Start Chatbot" and "Start Live Mock" buttons with working onClick handlers
+  - Loading spinners during backend verification and session initialization
+  - Disabled button states until all prerequisites are met
+  - Smooth animations for button state transitions
+  - Error handling with toast notifications for failed verifications
+  - Responsive button behavior with visual feedback
+
+### Logo Integration
+- PathWiz logo displayed prominently with increased size in headers across all pages (landing page, dashboard, navigation, profile setup)
+- Logo optimized for both light and dark mode themes with proper contrast
+- Responsive logo scaling for mobile and desktop views maintaining sharpness and center alignment
+- Enhanced visual prominence for stronger brand recognition
+- Consistent branding throughout the application interface
+
+### Dark Mode Theme System
+- Dark mode toggle button available across all pages and components
+- Seamless switching between light and dark themes using Tailwind's dark: class system
+- Theme preference persistence using localStorage to maintain user selection between sessions
+- Smooth transition animations when switching themes
+- Optimized contrast and accessibility for all text and icons in both light and dark modes
+- Logo visibility optimized for both light and dark backgrounds
+- Consistent dark theme styling across all components
+
+### Modern UI/UX Design
+- Refined typography with improved readability and visual hierarchy
+- Gradient buttons with hover effects and smooth transitions
+- Subtle animations for enhanced user experience
+- Responsive layout improvements for all screen sizes
+- Modern color schemes and spacing optimization
+- Interactive elements with visual feedback
+- Polished component styling across the entire application
+- **Enhanced visual feedback for resume upload validation and role verification states**
+- **Smooth animations for confirmation and warning popups with subtle transitions**
+- **Professional debounced timing for verification process without interrupting user input**
+- **Responsive button states with loading spinners and error animations**
+- **User-friendly toast notifications for error handling**
+- **Consistent animation timing and easing for modal transitions**
+
+### Performance Optimization
+- **Lazy loading implementation for large UI components**:
+  - ChatbotInterview component loaded only when user clicks "Start Chatbot"
+  - LiveMockInterview component loaded only when user clicks "Start Live Mock"
+  - CandidateReviewPanel component loaded only when accessed from dashboard
+- **Optimized image assets**:
+  - Compressed and optimized all large image files for faster loading
+  - WebP format support with fallback to PNG/JPG for better compression
+  - Responsive image loading with appropriate sizes for different screen resolutions
+- **Deferred module initialization**:
+  - Camera access modules loaded only when live mock interview starts
+  - Speech recognition modules loaded only when needed for voice analysis
+  - LLM-related modules initialized only when chatbot or analysis features are accessed
+- **Client-side caching and prefetch strategies**:
+  - Browser caching for static assets with appropriate cache headers
+  - Prefetching of critical resources for faster subsequent page loads
+  - Service worker implementation for offline capability and faster loading
+  - Local storage caching for user preferences and session data
+- **Code splitting and bundle optimization**:
+  - Dynamic imports for non-critical components
+  - Tree shaking to eliminate unused code
+  - Optimized bundle sizes for faster initial page load
+- **Performance monitoring**:
+  - Loading indicators for all async operations
+  - Progressive loading states for better user experience
+  - Error boundaries to prevent performance degradation from component failures
+
+## Backend Data Storage
+- User profiles and preferences with manually entered target role configurations
+- **Mandatory uploaded resume files** with parsed content and LLM analysis results
+- **Resume-role compatibility analysis results and verification status**
+- **Role-specific improvement suggestions generated from resume-role matching**
+- Resume quality ratings and improvement recommendations
+- Interview session records with detailed response tracking including selected target role and number of questions
+- Individual user responses and corresponding AI feedback entries
+- Voice analysis data including tone ratings and speech patterns
+- Appearance evaluation scores and styling feedback
+- Spoken answer transcripts and correction suggestions in LiveMockInterviewData records
+- Answer correctness ratings and improvement recommendations
+- Session configuration data including question count and target role selections
+- Feedback data and performance metrics including qualitative ratings
+- Quiz performance and achievement data
+- Comprehensive candidate evaluation reports
+- AI conversation history with enhanced context
+- **Resume upload status and role verification flags per user**
+- **Live mock interview session state tracking to distinguish between pre-session and active session phases**
+
+## Backend Operations
+- Resume parsing and content extraction with LLM-powered analysis
+- **Resume-role compatibility analysis using keyword matching and LLM evaluation**
+- **Role-specific improvement suggestion generation based on resume content and target role**
+- **Resume-role verification enforcement for all interview-related endpoints**
+- Resume quality evaluation and recommendation generation
+- **Resume upload validation for all interview-related API endpoints**
+- **Secure validation preventing interview session creation without uploaded resume and role verification**
+- AI question generation based on manually entered target role and adaptive requirements
+- Voice analysis processing and tone evaluation using LLM integration
+- Real-time speech recognition and transcription processing
+- Answer comparison and correctness evaluation
+- Context-relevant correction suggestion generation using LLM
+- Image analysis for dressing sense evaluation
+- Qualitative feedback analysis and rating generation
+- Real-time session data persistence for user responses and feedback
+- Storage of spoken answer transcripts and correction suggestions
+- Session configuration management including target role and question count tracking
+- Comprehensive candidate assessment compilation with session summary generation
+- Quiz question generation and scoring
+- Resource recommendation curation
+- Session data management with enhanced analytics
+- Performance tracking and analytics with multi-dimensional scoring
+- **Backend enforcement of resume-role verification for saveInterviewSession and saveLiveMockData APIs**
+- **Live mock interview session initialization tracking to prevent placeholder rating display**
+- **Real-time rating computation triggered only after active session start**
+- **Session state management to differentiate between setup phase and active interview phase**
+
+## Technical Integrations
+- **Deferred camera access** for live mock interviews with comprehensive permission handling
+- **Deferred microphone access** for voice analysis and speech recognition
+- Voice processing APIs for real-time speech analysis
+- Speech recognition APIs for transcription of spoken answers
+- Image analysis capabilities for appearance evaluation
+- **Deferred LLM integration** for resume analysis and content evaluation
+- **LLM integration for resume-role compatibility analysis and keyword matching**
+- LLM integration for answer correction and improvement suggestions
+- **LLM integration for generating role-specific improvement suggestions**
+- Blob storage for resume file uploads
+- AI services for question generation and feedback analysis
+- **Resume validation and role verification APIs for frontend-backend communication**
+- **Session state management APIs to control rating display timing in live mock interviews**
+- **Performance optimization APIs for efficient data loading and caching**
